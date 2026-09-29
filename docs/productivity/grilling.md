@@ -2,7 +2,7 @@
 
 `grilling` is the interview loop that stress-tests a plan, a decision, or an idea before anyone acts on it. It maps the subject as a **design tree**: every decision branches into the decisions that hang off it, and interviews you branch by branch until nothing is left silently assumed.
 
-It does not ask one question at a time, and it does not ask everything at once. Each **round** asks the whole **frontier**: every decision whose prerequisites are already settled, and nothing else. Two questions never share a round if one depends on the other; a question that hinges on an answer still open belongs to a later round. Your answers settle decisions, the frontier moves outward, and the next round asks what that unblocked. Thirteen questions typically land in about three rounds rather than thirteen.
+By default it asks neither one question at a time nor everything at once. Each **round** asks the whole **frontier**: every decision whose prerequisites are already settled, and nothing else. Two questions never share a round if one depends on the other; a question that hinges on an answer still open belongs to a later round. Your answers settle decisions, the frontier moves outward, and the next round asks what that unblocked. Thirteen questions typically land in about three rounds rather than thirteen. Ask for one question at a time, or a slower pace, and it keeps that pace for the session: the frontier is the same, it just arrives in smaller rounds.
 
 ## When to reach for it
 
@@ -28,6 +28,8 @@ Inside a round every question arrives in a fixed shape: numbered and titled behi
 
 The other half of the design is the split between facts and decisions. Facts are the skill's own job: when a frontier question needs something the [environment](https://www.aihero.dev/ai-coding-dictionary/environment) can settle, it dispatches a [sub-agent](https://www.aihero.dev/ai-coding-dictionary/subagent) to go and find out rather than asking you. It does not block on that; only the questions downstream of a running exploration wait. Decisions are yours, and it must wait for them. An agent running `grilling` that answers its own decisions has broken the skill, not interpreted it liberally. The session ends when the frontier is empty, and it will not act on what you agreed until you confirm you have reached a shared understanding.
 
+Recommendations follow the same rule. A `➡️` line is grounded in what the session has already learned, so while your current way of working is still unknown the skill asks about it before recommending anything, and says plainly when it has no grounded recommendation yet. Along the way it keeps three things apart: facts you have confirmed, answers it has proposed, and assumptions still open. Correcting two of its assumptions does not accept the rest; those stay marked as proposed until you say otherwise.
+
 The honest limit: the frontier is the agent's judgement, not a computed graph. It can put two questions in one round and only afterwards discover that one answer should have changed the other. There is no guard against that beyond telling it, which reopens the affected branch in the next round.
 
 ## What lives here and what lives in the wrappers
@@ -43,7 +45,7 @@ This page covers the mechanism. The things people most often want are documented
 ## Common questions
 
 **Can I go back to one question at a time?**
-Yes, and a large part of the audience does. Add this to your global `CLAUDE.md`:
+Yes, and a large part of the audience does. Say so in the session ("ask me one question at a time") and it holds that pace until you change it. To make it the default everywhere, add this to your global `CLAUDE.md`:
 
 ```
 When grilling, ask one question at a time.
@@ -78,9 +80,11 @@ A real and unfixed rough edge, reported across [harnesses](https://www.aihero.de
 - Nothing in a round needs another question in the same round answered first.
 - Later rounds ask things the first round could not have asked.
 - It goes and looks facts up (reading files, dispatching a sub-agent) rather than asking you something it could have found out.
+- Asked for one question at a time, it stays at one question at a time.
+- Early rounds ask how you work today; recommendations arrive once it knows, and it says "no recommendation yet" rather than inventing one.
+- Its summaries separate what you confirmed from what it proposed, and an assumption you did not answer is still labelled as proposed.
 - Research running in the background does not stall the round; only the questions that depend on it wait.
 - It stops at the end and asks you to confirm the understanding is shared, instead of starting work.
-- Question count stays high while round count stays low.
 
 ## Where it fits
 
